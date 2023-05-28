@@ -1,18 +1,19 @@
 #!/usr/bin/python3
-""" """
+"""Index file for flask app"""
+
 from flask import Blueprint, jsonify
 from models import storage
-from models.state import State
 from api.v1.views import app_views
 
 
-@app_views.route('/status', methods=['GET'], strict_slashes=False)
+@app_views.route('/status', strict_slashes=False)
 def get_status():
     """Confirm status of route"""
+
     return jsonify({'status': 'OK'})
 
 
-@app_views.route('/stats', methods=['GET'], strict_slashes=False)
+@app_views.route('/stats', strict_slashes=False)
 def object_status():
     """Create endpoint that retrieves the number of each objects by type"""
 
