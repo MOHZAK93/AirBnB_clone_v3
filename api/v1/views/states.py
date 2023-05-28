@@ -8,7 +8,7 @@ from models.state import State
 from models import storage
 
 
-@app_views.route('/states', method=['GET', 'POST'], strict_slashes=False)
+@app_views.route('/states', methods=['GET', 'POST'], strict_slashes=False)
 def states():
     """Creates new view for State objects"""
     if request.method == 'GET':
