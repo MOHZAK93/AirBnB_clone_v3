@@ -37,7 +37,7 @@ def city_by_state(state_id):
                 city = City(**my_dict)
                 city.save()
                 return jsonify(city.to_dict()), 201
-            abort(404)
+        abort(404)
 
 
 @app_views.route('/cities/<string:city_id>',
