@@ -8,42 +8,51 @@ from models.state import State
 from models import storage
 
 
-@app_views.route('/states', methods=['GET', 'POST'], strict_slashes=False)
-def states():
-    """Creates new view for State objects"""
-    if request.method == 'GET':
-        return jsonify([val.to_dict() for val in storage.all('State')
-                        .values()])
-    elif request.method == 'POST':
-        post = request.get_json()
-        if post is None or type(post) != dict:
-            return jsonify({"error": "Not a JSON"}), 400
-        elif post.get("name") is None:
-            return jsonify({"error": "Missing name"}), 400
-        new_state = State(**post)
-        new_state.save()
-        return jsonify(new_state.to_dict()), 201
+@app_views.route('/states',
+           methods=['GET', 'POST'], strict_slashes=False)
+@app_views.route('/states/<state_id>',
+                 methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
+def states(state_id=None):
+    """Retrieves a list of state objects"""
 
-    @app_views.route('/states/<string:state_id>',
-                     method=["GET", "PUT", "DELETE"], strict_slashes=False)
-    def get_state_id(state_id):
-        """Retrieves a state object with a specific id"""
-        state = storage.get("State", state_id)
-        if state is None:
+    state_objs = storage.all(State)
+
+    states = [obj.to_dict() for obj in state_objs.values()]
+    if not state_id:
+        if request.method == 'GET':
+            return jsonify(states)
+        elif request.method == 'POST':
+            my_dict = request.get_json()
+
+            if my_dict is None:
+                abort(400, 'Not a JSON')
+            if my_dict.get("name") is None:
+                abort(400, 'Missing name')
+            new_state = State(**my_dict)
+            new_state.save()
+            return jsonify(new_state.to_dict()), 201
+    else:
+        if request.method == 'GET':
+            for state in states:
+                if state.get('id') == state_id:
+                    return jsonify(state)
             abort(404)
-        elif request.method == "GET":
-            return jsonify(state.to_dict())
-        elif request.method == "DELETE":
-            state = storage.get("State", state_id)
-            storage.delete(state)
-            storage.save()
-            return jsonify({}), 200
-        elif request.method == "PUT":
-            put = request.get_json()
-            if put is None or type(put) != dict:
-                return jsonify({"error": "Not a JSON"}), 400
-            for k, v in put.items():
-                if k not in ['id', 'created_at', 'updated_at']:
-                    setattr(state, k, v)
+        elif request.method == 'PUT':
+            my_dict = request.get_json()
+
+            if my_dict is None:
+                abort(400, 'Not a JSON')
+            for state in state_objs.values():
+                if state.id == state_id:
+                    state.name = my_dict.get("name")
+                    state.save()
+                    return jsonify(state.to_dict()), 200
+            abort(404)
+
+        elif request.method == 'DELETE':
+            for obj in state_objs.values():
+                if obj.id == state_id:
+                    storage.delete(obj)
                     storage.save()
-            return jsonify(state.to_dict()), 200
+                    return jsonify({}), 200
+            abort(404)
