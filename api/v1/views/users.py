@@ -18,7 +18,7 @@ def users(user_id=None):
 
     users = [obj.to_dict() for obj in users_objs.values()]
 
-    def not user_id:
+    if not user_id:
         if request.method == 'GET':
             return jsonify(users)
         if request.method == 'POST':
