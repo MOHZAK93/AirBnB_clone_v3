@@ -2,7 +2,7 @@
 """View for Amenity objects that handles all
 defualt RESTFul API actions
 """
-from flask import Blueprint, jsonify, request, abort
+from flask import jsonify, request, abort
 from api.v1.views import app_views
 from models.amenity import Amenity
 from models import storage
@@ -31,19 +31,6 @@ def amenities(amenity_id=None):
             new_amenity.save()
             return jsonify(new_amenity.to_dict()), 201
 
-        abort(404)
-    elif request.method == 'POST':
-        for state in states:
-            if state.id == state_id:
-                my_dict = request.get_json()
-                if my_dict is None:
-                    abort(400, 'Not a JSON')
-                if my_dict.get("name") is None:
-                    abort(400, 'Missing name')
-                my_dict["state_id"] = state_id
-                city = City(**my_dict)
-                city.save()
-                return jsonify(city.to_dict()), 201
         else:
             if request.method == "GET":
                 for amenity in amenities:
@@ -60,6 +47,7 @@ def amenities(amenity_id=None):
                         amenity.save()
                         return jsonify(amenity.to_dict()), 200
                 abort(404)
+
             elif request.method == "DELETE":
                 for obj in amenity_objs.values():
                     if obj.id == amenity_id:
