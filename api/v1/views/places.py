@@ -43,10 +43,11 @@ def places_by_city(city_id):
         abort(404)
 
 
-@app_views.route('/places/<string:place_id>',
+@app_views.route('/places/<place_id>',
                  methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
 def place_by_place_id(place_id):
     """Retrieves a place based on the place_id"""
+
     place = storage.get(Place, place_id)
 
     if place is None:
