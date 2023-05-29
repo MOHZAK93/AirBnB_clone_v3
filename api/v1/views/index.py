@@ -18,7 +18,7 @@ def object_status():
     """Create endpoint that retrieves the number of each objects by type"""
 
     objs = {
-            "amenity": storage.count('Amenity'),
+            "amenities": storage.count('Amenity'),
             "cities": storage.count('City'),
             "places": storage.count('Place'),
             "reviews": storage.count('Review'),
